@@ -42,7 +42,7 @@ class host():
     def __is_alive(self):
         n = len(os.popen('w').read().strip().split('\n')[2:])
         for i in os.popen('w').read().strip().split('\n'):
-            if " :0 " in i:
+            if "tty" in i:
                 n -= 1
         if n >= 1:
             self.alive = True

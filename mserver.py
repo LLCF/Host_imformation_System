@@ -31,21 +31,19 @@ def update():
     cdata = connect_data()
     for d in data:
         cdata.update(d)
-    
     return '<p>OK</p>' 
+
 @app.route('/data.json')
 def get_json():
-    #datas = get_data()
-    #print "******"+datas.to_json()+"*****"
-    #return datas.to_json(date_format='iso')
-    #print get_data()
     return get_data()
-    #return [{"cards_name":"GeForce GTX 1080","num_cards": "1"}]
-
 
 @app.route('/')
 def x():
     return render_template('index.html')
+@app.route('/server')
+def admin():
+    return render_template('server.html')
+
 
 if __name__ == '__main__':
     app.run(debug=False,host='0.0.0.0',port=8000)
