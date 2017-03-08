@@ -28,7 +28,7 @@ if [[ "$cront" == "" ]]
 then
     sudo echo  "*/20 *    * * *   root    python /etc/init.d/hostinfo.py" >> /etc/crontab
 fi
-sudo cp hostinfo.py /etc/init.d/
+sudo cp hostinfo.py client.cfg  /etc/init.d/
 result=$(cat /etc/issue | grep "16")
 if [[ "$result" != "" ]]
 then

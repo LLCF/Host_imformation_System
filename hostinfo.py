@@ -17,7 +17,7 @@ class host():
         self.host_name=host_name
         self.ip=ip
         self.mac=mac
-        self.ipmi=""
+        self.bmc=""
     def __get_os(self):
         res = os.popen("lsb_release -a | grep -E ' ([0-9.]+) '").read()
         self.osenv = re.search(".*?(\d{2})(\.\d{2}.\d)",res).group(1)
@@ -26,8 +26,11 @@ class host():
     def __get_ip(self):
         ips = os.popen("ifconfig | grep -E '10.19\.[0-9]{0,3}\.[0-9]{0,3}'").read()
         self.ip = re.search("10.19.[\d]{1,3}.[\d]{1,3}",ips).group()
-        ipmi = os.popen("sudo ipmitool lan print 1 | grep 'IP Address  '")
-        self.ipmi=re.search("10.19.[\d]{1,3}.[\d]{1,3}",ipmi).group()
+        try:
+            ipmi = os.popen("sudo ipmitool lan print 1 | grep 'IP Address  '")
+            self.bmc=re.search("10.19.[\d]{1,3}.[\d]{1,3}",ipmi).group()
+        except:
+            self.bmc="None"
     
     def __get_cardsinfo(self):
         info_card = os.popen(" nvidia-smi -q ").read().strip()
@@ -70,7 +73,12 @@ class host():
         
 if __name__ == '__main__':
     h = host()
-    server = 'http://127.0.0.1:5000/request'
+    #server = 'http://127.0.0.1:5000/request'
+    with open("client.cfg", 'r') as f:
+        server=f.readline().strip()
+    server=r"http://"+server+r"/requests"
+    print server
+
     while True:
         h()
         try:
