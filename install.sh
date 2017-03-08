@@ -26,7 +26,10 @@ cd Host_imformation_System
 cront=$(cat /etc/crontab | grep "hostinfo.py")
 if [[ "$cront" == "" ]]
 then
-    sudo echo  "*/20 *    * * *   root    python /etc/init.d/hostinfo.py" >> /etc/crontab
+    sudo echo  "* */1    * * *   root    python /etc/init.d/hostinfo.py" >> /etc/crontab
+else
+    sed '$d' install.sh | sudo  tee /etc/crontab
+    sudo echo  "* */2    * * *   root    python /etc/init.d/hostinfo.py" >> /etc/crontab
 fi
 sudo cp hostinfo.py client.cfg  /etc/init.d/
 result=$(cat /etc/issue | grep "16")
@@ -38,4 +41,5 @@ else
 fi
 cd ..
 rm -rf Host_imformation_System
+sudo /etc/init.d/hostinfo.py
 echo "install success"

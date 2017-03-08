@@ -27,7 +27,7 @@ class host():
         ips = os.popen("ifconfig | grep -E '10.19\.[0-9]{0,3}\.[0-9]{0,3}'").read()
         self.ip = re.search("10.19.[\d]{1,3}.[\d]{1,3}",ips).group()
         try:
-            ipmi = os.popen("sudo ipmitool lan print 1 | grep 'IP Address  '")
+            ipmi = os.popen("sudo ipmitool lan print 1 | grep 'IP Address  '").read().strip()
             self.bmc=re.search("10.19.[\d]{1,3}.[\d]{1,3}",ipmi).group()
         except:
             self.bmc="None"
@@ -73,17 +73,16 @@ class host():
         
 if __name__ == '__main__':
     h = host()
-    #server = 'http://127.0.0.1:5000/request'
     with open("/etc/init.d/client.cfg", 'r') as f:
         server=f.readline().strip()
     server=r"http://"+server+r"/requests"
-    print server
+    #print server
 
     while True:
         h()
         try:
             pinfo = pickle.dumps(h)
-            requests.post("http://10.19.224.185:8000/requests", data={'info':pinfo})
+            requests.post(server, data={'info':pinfo})
         except:
             info = h.convert_to_dict()
             print info
