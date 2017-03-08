@@ -19,8 +19,11 @@ class host():
         self.mac=mac
         self.bmc=""
     def __get_os(self):
-        res = os.popen("lsb_release -a | grep -E ' ([0-9.]+) '").read()
-        self.osenv = re.search(".*?(\d{2})(\.\d{2}.\d)",res).group(1)
+        #res = os.popen("lsb_release -a | grep -E ' ([0-9.]+) '").read()
+        #self.osenv = re.search(".*?(\d{2})(\.\d{2}.\d)",res).group(1)
+        with open("/etc/issue",'r') as f:
+            self.osenv=f.read().strip()[0:-5]
+        #print self.osenv
         self.host_name=socket.gethostname()
 
     def __get_ip(self):
