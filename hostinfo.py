@@ -74,7 +74,7 @@ class host():
 if __name__ == '__main__':
     h = host()
     #server = 'http://127.0.0.1:5000/request'
-    with open("client.cfg", 'r') as f:
+    with open("/etc/init.d/client.cfg", 'r') as f:
         server=f.readline().strip()
     server=r"http://"+server+r"/requests"
     print server
