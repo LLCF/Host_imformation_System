@@ -22,7 +22,6 @@ expect {
 
     }
 expect "100%"
-expect eof
 
 spawn ssh $ipaddress  -l$username
 expect {  

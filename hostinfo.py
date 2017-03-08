@@ -29,6 +29,9 @@ class host():
     def __get_ip(self):
         ips = os.popen("ifconfig | grep -E '10.19\.[0-9]{0,3}\.[0-9]{0,3}'").read()
         self.ip = re.search("10.19.[\d]{1,3}.[\d]{1,3}",ips).group()
+        if len(os.popen("lsmod | grep ipmi").read()) < 100:
+            self.bmc="None"
+            return 
         try:
             ipmi = os.popen("sudo ipmitool lan print 1 | grep 'IP Address  '").read().strip()
             self.bmc=re.search("10.19.[\d]{1,3}.[\d]{1,3}",ipmi).group()
