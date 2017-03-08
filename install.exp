@@ -1,0 +1,55 @@
+#!/usr/bin/expect 
+set ipaddress [lindex $argv 0]
+set username [lindex $argv 1]
+set passwd [lindex $argv 2]
+set timeout 30
+spawn scp install.sh $username@$ipaddress:~
+expect {
+        "*re you sure you want to continue connecting*"
+        {
+            send "yes\n"
+            expect {
+                "*assword*"
+                    {
+                        send "$passwd\n"
+                    }
+                }
+        }
+        "*assword*"
+        {
+                send "$passwd\r"
+        }
+
+    }
+expect "100%"
+expect eof
+
+spawn ssh $ipaddress  -l$username
+expect {  
+        "*re you sure you want to continue connecting*"  
+        {  
+            send "yes\n"  
+            expect {  
+                "*assword*"  
+                    {  
+                        send "$passwd\n"  
+                    }  
+                }  
+        }  
+        "*assword*"  
+        {  
+                send "$passwd\r"  
+        }  
+
+    }  
+expect -re "$username@.*\$"
+send "sudo ./install.sh\r"
+
+expect  "password"
+send "$passwd\r"
+expect "success"
+
+send "exit\r"
+expect eof
+exit
+

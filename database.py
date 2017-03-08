@@ -28,7 +28,10 @@ class Host(Base):
 #    def __repr__(self):
 #        return "<Host(cards_name=%s,driver=%s,num_cards=%s,osenv=%s,alive=%s,host_name=%s,ip=%s,mac=%s)>" % self.cards_name,self.driver,self.num_cards,self.osenv,str(self.alive),self.host_name,self.ip,self.mac
 def Host_init(h):
-    H = Host(cards_name=''.join(e for e in h.cards_name ),driver=h.driver,num_cards=h.num_cards,osenv=h.osenv,alive=str(h.alive),host_name=h.host_name,ip=h.ip,mac=h.mac,bmc=h.bmc)
+    try:
+        H = Host(cards_name=''.join(e for e in h.cards_name ),driver=h.driver,num_cards=h.num_cards,osenv=h.osenv,alive=str(h.alive),host_name=h.host_name,ip=h.ip,mac=h.mac,bmc=h.bmc)
+    except:
+        H = Host(cards_name=''.join(e for e in h.cards_name ),driver=h.driver,num_cards=h.num_cards,osenv=h.osenv,alive=str(h.alive),host_name=h.host_name,ip=h.ip,mac=h.mac)
     return H
 class connect_data():
     def __init__(self):
