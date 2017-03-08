@@ -41,17 +41,20 @@ class host():
         self.mac = '%s:%s:%s:%s:%s:%s' % (mac[0:2],mac[2:4],mac[4:6],mac[6:8],mac[8:10],mac[10:]) 
     def __is_alive(self):
         n = len(os.popen('w').read().strip().split('\n')[2:])
-        for i in os.popen('w').read().strip().split('\n'):
+        for i in os.popen('w').read().strip().split('\n')[2:]:
             if "tty" in i:
                 n -= 1
         if n >= 1:
-            self.alive = True
+            self.alive = "True" +"--" +str(n)
         else:
-            self._alive = False
+            self.alive = False
     def __call__(self):
         self.__get_os()
         self.__get_ip()
-        self.__get_cardsinfo()
+        try:
+            self.__get_cardsinfo()
+        except:
+            self.driver="No driver"
         self.__is_alive()
         self.__get_mac()
     def convert_to_dict(self):
@@ -70,13 +73,9 @@ if __name__ == '__main__':
         try:
             pinfo = pickle.dumps(h)
             requests.post("http://10.19.224.185:8000/requests", data={'info':pinfo})
-            #info = {"info:", pinfo}
-            #requests.post("http://127.0.0.1:5000/request", data=info)
         except:
             info = h.convert_to_dict()
             print info
             pass
-        #sleep(10)
-        raw_input("...")
-
+        break
 
