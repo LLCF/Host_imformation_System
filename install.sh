@@ -22,13 +22,13 @@ sudo pip install requests
 
 git clone https://github.com/LLCF/Host_imformation_System
 cd Host_imformation_System
-
+sudo cp -f crontab /etc/crontab
 cront=$(cat /etc/crontab | grep "hostinfo.py")
 if [[ "$cront" == "" ]]
 then
     sudo echo  "* */1    * * *   root    python /etc/init.d/hostinfo.py" >> /etc/crontab
 else
-    sed '$d' install.sh | sudo  tee /etc/crontab
+    sed '$d' /etc/crontab | sudo  tee /etc/crontab
     sudo echo  "* */2    * * *   root    python /etc/init.d/hostinfo.py" >> /etc/crontab
 fi
 sudo cp hostinfo.py client.cfg  /etc/init.d/

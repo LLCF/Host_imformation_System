@@ -31,7 +31,7 @@ def Host_init(h):
     try:
         H = Host(cards_name=''.join(e for e in h.cards_name ),driver=h.driver,num_cards=h.num_cards,osenv=h.osenv,alive=str(h.alive),host_name=h.host_name,ip=h.ip,mac=h.mac,bmc=h.bmc)
     except:
-        H = Host(cards_name=''.join(e for e in h.cards_name ),driver=h.driver,num_cards=h.num_cards,osenv=h.osenv,alive=str(h.alive),host_name=h.host_name,ip=h.ip,mac=h.mac)
+        H = Host(cards_name=' ',num_cards=" ", driver=h.driver,osenv=h.osenv,alive=str(h.alive),host_name=h.host_name,ip=h.ip,mac=h.mac)
     return H
 class connect_data():
     def __init__(self):
