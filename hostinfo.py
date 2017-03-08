@@ -17,6 +17,7 @@ class host():
         self.host_name=host_name
         self.ip=ip
         self.mac=mac
+        self.ipmi=""
     def __get_os(self):
         res = os.popen("lsb_release -a | grep -E ' ([0-9.]+) '").read()
         self.osenv = re.search(".*?(\d{2})(\.\d{2}.\d)",res).group(1)
@@ -25,6 +26,8 @@ class host():
     def __get_ip(self):
         ips = os.popen("ifconfig | grep -E '10.19\.[0-9]{0,3}\.[0-9]{0,3}'").read()
         self.ip = re.search("10.19.[\d]{1,3}.[\d]{1,3}",ips).group()
+        ipmi = os.popen("sudo ipmitool lan print 1 | grep 'IP Address  '")
+        self.ipmi=re.search("10.19.[\d]{1,3}.[\d]{1,3}",ipmi).group()
     
     def __get_cardsinfo(self):
         info_card = os.popen(" nvidia-smi -q ").read().strip()
@@ -45,9 +48,9 @@ class host():
             if "tty" in i:
                 n -= 1
         if n >= 1:
-            self.alive = "True" +"--" +str(n)
+            self.alive = "True"
         else:
-            self.alive = False
+            self.alive = "False"
     def __call__(self):
         self.__get_os()
         self.__get_ip()
