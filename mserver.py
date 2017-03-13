@@ -1,13 +1,14 @@
 from flask import Flask, request, abort, render_template
-from hostinfo import host
+from apps.hostinfo import host
 import pickle
-from database import connect_data
+from apps.database import connect_data
 import json
 import sqlite3 as lite
-import pandas as pd
+from apps.scheduler import Scheduler
+from flask_script import Manager
 
 app = Flask(__name__)
-
+manager = Manager(app)
 def get_data():
     cdata = connect_data()
     return cdata.read_data()
@@ -44,6 +45,14 @@ def x():
 def admin():
     return render_template('server.html')
 
-
+def check_status():
+    cdata = connect_data() 
+    cdata.check()
 if __name__ == '__main__':
+    scheduler = Scheduler(3600*6, check_status)
+    scheduler.start()
     app.run(debug=False,host='0.0.0.0',port=8000)
+    scheduler.stop()
+
+
+

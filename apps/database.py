@@ -75,6 +75,20 @@ class connect_data():
         host[0].bmclo = data["bmclo"]
         host[0].login = data["login"]
         self.s.commit()
+    def check(self):
+        hosts = self.s.query(Host).all()
+        now = datetime.now()
+        for host in hosts:
+            #t = datetime.strptime(host.nowtime.split('.')[0], '%Y-%m-%d %X')
+            if (now - host.nowtime).seconds > 3600*6:
+                host.user=""
+                host.desc=""
+                host.osenv="Unknown"
+                host.driver="Unknown"
+                host.cards_name="Unknown"
+                host.host_name="Unconnected"
+                host.alive = "False"
+                self.s.commit()
     def read_data(self):
         datas = self.s.query(Host).all()
         result = []
