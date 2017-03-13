@@ -25,7 +25,6 @@
             <button id="setuser" class="btn btn-default">Set</button>
    </div>
      <table id="table"
-            data-toolbar="#toolbar"
             data-toggle="table" 
      	    data-url="./data.json"
 	    data-pagination="true"  
@@ -39,8 +38,7 @@
             data-show-columns="true"
             data-show-footer="false">
 		    <thead>
-			    <tr> 
-                                <th data-field="state" data-checkbox='true'  ></th>
+			    <tr>  
                                 <th data-type="text" contenteditable="true" data-field="host_name" >Host Name</th>
 				<th data-field="cards_name">Cards</th>
 	    			<th data-field="num_cards">Num</th>
@@ -64,12 +62,8 @@
         $button = $('#button');
         $setuser = $('#setuser')
     $(function () {
-        $button.click(function () {
-            post()
-        });
-    });
-    function post() {
-                 var data = {
+        function post() {
+   		 var data = {
                 data: JSON.stringify($table.bootstrapTable('getData'))
                 }
                 $.ajax({
@@ -80,7 +74,20 @@
                 alert("Success")
                }
               })
-             }   
+             }       
+        $button.click(function () {
+            post()
+        });
+    });
+<!--    function stateFormatter(value, row, index) {
+    if (row.state == true)
+        return {
+            disabled : true,
+            checked : true
+        };
+    return value;
+    }
+    $setuser.prop('disabled', !$table.bootstrapTable('getSelections').length);-->
     function displaycolor(value,row,index) {  
         var a = "";  
             if(value == "True") {  
@@ -91,16 +98,15 @@
             return a;  
         }  
     function getIdSelections() {
-         $.map($table.bootstrapTable('getSelections'), function (rows) {
-            rows.user="Charl"
-            $table.bootstrapTable('updateRow', {index:row.index,row:rows});
+        return $.map($table.bootstrapTable('getSelections'), function (row) {
+            return row.id
         });
-        post();
     }
-    $setuser.click(function () {
-         getIdSelections(); 
-            
-    });
+<!--    $setuser.click(function () {
+         var ids = getIdSelections();
+         
+} -->
+    
 </script>
   </body>
 </html>

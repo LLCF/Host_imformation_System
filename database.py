@@ -39,7 +39,6 @@ class connect_data():
         self.session = sessionmaker()
         self.session.configure(bind=self.engine)
         Base.metadata.create_all(self.engine)
-
         self.s = self.session()
     def insert_host(self, h):
         h = Host_init(h)
@@ -49,14 +48,23 @@ class connect_data():
             host[0].driver = h.driver
             host[0].num_cards=h.num_cards
             host[0].osenv=h.osenv
+            if host[0].alive=="False" and h.alive=="False":
+                host[0].user=""
+                host[0].desc=""
             host[0].alive=h.alive
             host[0].host_name=h.host_name
             host[0].ip=h.ip
             host[0].nowtime = datetime.now()
-            host[0].bmc=h.bmc
-            print "update"
+            try:
+                if len(h.bmc)>8:
+                    host[0].bmc=h.bmc
+                else:
+                    host[0].bmc="None"
+            except:
+                host[0].bmc="None"
+                self.s.commit()
+                return
         else:
-            print "add"
             self.s.add(h)
         self.s.commit()
     def update(self,data):
@@ -71,12 +79,5 @@ class connect_data():
         datas = self.s.query(Host).all()
         result = []
         for data in datas:
-	    result.append({r"cards_name":data.cards_name,r"num_cards":" "+data.num_cards,"login":data.login,r"host_name":data.host_name,r"driver":data.driver,r"osenv":'Ubuntu'+data.osenv+'.04',r"ip":data.ip,"alive":data.alive,r"nowtime":str(data.nowtime)[5:-7],"mac":data.mac,"user":data.user,"desc":data.desc,"bmc":data.bmc,"bmclo":data.bmclo})
+	    result.append({r"cards_name":data.cards_name,r"num_cards":" "+data.num_cards,"login":data.login,r"host_name":data.host_name,r"driver":data.driver,r"osenv":data.osenv,r"ip":data.ip,"alive":data.alive,r"nowtime":str(data.nowtime)[5:-7],"mac":data.mac,"user":data.user,"desc":data.desc,"bmc":data.bmc,"bmclo":data.bmclo})
         return json.dumps(result)
-    
-     
-if __name__ == '__main__':
-    cdata = connect_data()
-    h = host()
-    h()
-    cdata.insert_host(h)
