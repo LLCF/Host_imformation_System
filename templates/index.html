@@ -22,7 +22,9 @@
      <h1>Test Host System Info in Manual Test</h1>
     <div id="toolbar">
             <button id="button" class="btn btn-default">Update</button>
+    </div>
      <table id="table"
+            data-toolbar="#toolbar"
             data-toggle="table" 
      	    data-url="./data.json"
 	    data-pagination="true"  
@@ -79,16 +81,6 @@
             post()
         });
     });
-        function linkked(value,row,index) {  
-        var a = "";  
-            if(value.length>7) {  
-                alert(value.length)
-                var '<span>'+value+'</span>'; 
-            }else{  
-                var a = '<span>'+value+'</span>';  
-            }  
-            return a;  
-        }
 </script>
   </body>
 </html>

@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from hostinfo import host
 from datetime import datetime
+from mail import send_email
 import json
 Base = declarative_base()
 
@@ -69,12 +70,16 @@ class connect_data():
         self.s.commit()
     def update(self,data):
         host = self.s.query(Host).filter_by(mac=data["mac"]).all()
+        mac=''
+        if host[0].user!=data["user"]:
+            mac=host[0].mac
         host[0].user = data["user"]
         host[0].desc = data["desc"]
         host[0].bmc = data["bmc"]
         host[0].bmclo = data["bmclo"]
         host[0].login = data["login"]
         self.s.commit()
+        return mac
     def check(self):
         hosts = self.s.query(Host).all()
         now = datetime.now()
@@ -89,6 +94,9 @@ class connect_data():
                 host.host_name="Unconnected"
                 host.alive = "False"
                 self.s.commit()
+    def query_data(self, macc):
+        host = self.s.query(Host).filter_by(mac=macc).all()
+        return host[0].user, host[0].cards_name, host[0].ip, host[0].desc
     def read_data(self):
         datas = self.s.query(Host).all()
         result = []

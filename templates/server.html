@@ -15,6 +15,15 @@
         <script src="//rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/js/bootstrap-editable.js"></script>
 <!-- Latest compiled and minified Locales <script src="index.js"></script><link rel="stylesheet" href="assets/index.css">-->
     <script src="./static/src/bootstrap-table-en-US.js"></script>
+      <style>
+            input {
+                  height: 34px;
+                  color: #555;
+                   background-color: #fff;
+                  border: 1px solid #ccc;
+                  border-radius: 4px;
+            }
+        </style>
   </head>
 
   <body>
@@ -23,6 +32,8 @@
     <div id="toolbar">
             <button id="button" class="btn btn-default">Update</button>
             <button id="setuser" class="btn btn-default">Set</button>
+            <input  type="text" name="user" id="user" size="12" placeholder="User">
+            <input  type="text" name="usage" id="usage"  size="12" placeholder="Usage" >
    </div>
      <table id="table"
             data-toolbar="#toolbar"
@@ -92,8 +103,11 @@
         }  
     function getIdSelections() {
          $.map($table.bootstrapTable('getSelections'), function (rows) {
-            rows.user="Charl"
-            $table.bootstrapTable('updateRow', {index:row.index,row:rows});
+            if((rows.user==""&&document.getElementById("user").value!="")||(rows.user!=""&&document.getElementById("user").value=="")){
+             rows.user=document.getElementById("user").value
+             rows.desc=document.getElementById("usage").value
+           }
+            $table.bootstrapTable('updateRow', {index:rows.index,row:rows});
         });
         post();
     }

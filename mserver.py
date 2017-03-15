@@ -3,11 +3,24 @@ from apps.hostinfo import host
 import pickle
 from apps.database import connect_data
 import json
-import sqlite3 as lite
+#import sqlite3 as lite
 from apps.scheduler import Scheduler
 from flask_script import Manager
+from flask_mail import Mail, Message
+from apps.mail import send_email
+import os
+from time import sleep 
 
 app = Flask(__name__)
+app.config['MAIL_SERVER'] = 'smtp.163.com'#'smtp.nvidia.com'
+app.config['MAIL_PORT'] = 994
+#app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
+app.config['MAIL_USE_SSL']=True
+
+
+mail = Mail(app)
 manager = Manager(app)
 def get_data():
     cdata = connect_data()
@@ -30,8 +43,18 @@ def update():
     data = data.replace('(','[').replace(')',']').replace('\'','"')
     data = json.loads(data)
     cdata = connect_data()
+    c_data=[]
     for d in data:
-        cdata.update(d)
+        mac = cdata.update(d)
+        if mac != '':
+            #macs.append(mac)
+            user, host, ip, usage = cdata.query_data(mac)
+            if user != '':
+                c_data.append([user, host, ip, usage])
+    if len(c_data)>0 :
+        print "send emails"
+        send_email(mail, c_data)
+        print "send success"
     return '<p>OK</p>' 
 
 @app.route('/data.json')
@@ -52,6 +75,7 @@ if __name__ == '__main__':
     scheduler = Scheduler(3600*6, check_status)
     scheduler.start()
     app.run(debug=False,host='0.0.0.0',port=8000)
+    #manager.run(host='0.0.0.0',port=8000)
     scheduler.stop()
 
 
