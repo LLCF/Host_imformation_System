@@ -24,7 +24,7 @@ git clone https://github.com/LLCF/Host_imformation_System
 cd Host_imformation_System
 #sudo cp -f crontab /etc/crontab
 cat /etc/crontab | grep -v "hostinfo.py" | sudo tee /etc/crontab
-
+sudo echo  "1 */3    * * *   root    python /etc/init.d/hostinfo.py" >> /etc/crontab
 sudo cp apps/hostinfo.py install/client.cfg  /etc/init.d/
 result=$(cat /etc/issue | grep "16")
 if [[ "$result" != "" ]]
