@@ -15,14 +15,26 @@
         <script src="//rawgit.com/vitalets/x-editable/master/dist/bootstrap3-editable/js/bootstrap-editable.js"></script>
 <!-- Latest compiled and minified Locales <script src="index.js"></script><link rel="stylesheet" href="assets/index.css">-->
     <script src="./static/src/bootstrap-table-en-US.js"></script>
+      <style>
+            input {
+                  height: 34px;
+                  color: #555;
+                   background-color: #fff;
+                  border: 1px solid #ccc;
+                  border-radius: 4px;
+            }
+        </style>
   </head>
 
   <body>
     <div class="container">
-     <h1>Test Host System Info in Manual Test</h1>
+    <h1>Test Host System Info in Manual Test</h1>
     <div id="toolbar">
             <button id="button" class="btn btn-default">Update</button>
-    </div>
+            <button id="setuser" class="btn btn-default">Set</button>
+            <input  type="text" name="user" id="user" size="12" placeholder="User">
+            <input  type="text" name="usage" id="usage"  size="12" placeholder="Usage" >
+   </div>
      <table id="table"
             data-toolbar="#toolbar"
             data-toggle="table" 
@@ -36,23 +48,23 @@
             data-pagination="true" 
             data-page-number=1
             data-show-columns="true"
-            data-show-footer="false"
-            >
+            data-show-footer="false">
 		    <thead>
-			    <tr>  
-                    <th id="name" data-type="text" contenteditable="true" data-field="host_name">Host Name</th>
+			    <tr> 
+                                <th data-field="state" data-checkbox='true'  ></th>
+                                <th data-type="text" contenteditable="true" data-field="host_name" >Host Name</th>
 				<th data-field="cards_name">Cards</th>
 	    			<th data-field="num_cards">Num</th>
 		    		<th data-field="driver">Driver</th>
 			    	<th data-field="osenv" data-sortable="true">OS</th>
 				<th data-field="ip">IP</th>
-                                <th data-field="login">Login</th>
-		                <th data-field="alive" data-sortable="true">Used</th>
+                                <th data-field="login" >Login</th>
+		                <th data-field="alive" data-sortable="true" data-formatter='displaycolor' >Used</th>
 				<th data-field="nowtime" data-visible="false">Time</th>
                                 <th data-field="user" data-editable="true" data-sortable="true">User</th>
-                                <th data-field="mac" data-visible="false">Mac</th>
-                                <th data-field="desc" data-editable="true">Usage</th>
-                                <th data-field="bmc"  >BMC</th>
+                                <th data-field="mac" data-visible="false">Mac</th> 
+                                <th data-field="desc" data-editable="true">Usage</th> 
+                                <th data-field="bmc" >BMC</th>
                                 <th data-field="bmclo" >BMC Login</th>
 			    </tr>
 		    </thead>
@@ -61,11 +73,14 @@
 <script>
     var $table = $('#table'),
         $button = $('#button');
-
+        $setuser = $('#setuser')
     $(function () {
-        
-        function post() {
-   		 var data = {
+        $button.click(function () {
+            post()
+        });
+    });
+    function post() {
+                 var data = {
                 data: JSON.stringify($table.bootstrapTable('getData'))
                 }
                 $.ajax({
@@ -76,10 +91,29 @@
                 alert("Success")
                }
               })
-             }       
-        $button.click(function () {
-            post()
+             }   
+    function displaycolor(value,row,index) {  
+        var a = "";  
+            if(value == "True") {  
+                var a = '<span style="background-color:#00ff00">'+value+'</span>';  
+            }else{  
+                var a = '<span style="background-color:#ff0000" >'+value+'</span>';  
+            }  
+            return a;  
+        }  
+    function getIdSelections() {
+         $.map($table.bootstrapTable('getSelections'), function (rows) {
+            if((rows.user==""&&document.getElementById("user").value!="")||(rows.user!=""&&document.getElementById("user").value=="")){
+             rows.user=document.getElementById("user").value
+             rows.desc=document.getElementById("usage").value
+           }
+            $table.bootstrapTable('updateRow', {index:rows.index,row:rows});
         });
+        post();
+    }
+    $setuser.click(function () {
+         getIdSelections(); 
+            
     });
 </script>
   </body>
