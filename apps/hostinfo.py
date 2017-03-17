@@ -87,6 +87,7 @@ if __name__ == '__main__':
     while True:
         h()
         try:
+            host.__module__ = 'apps.hostinfo'
             pinfo = pickle.dumps(h)
             requests.post(server, data={'info':pinfo})
         except:
