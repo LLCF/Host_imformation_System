@@ -1,7 +1,7 @@
 import os
 import threading
 from sys import argv
-hosts = [17,159,218,187,53,210,163,80,86,186,221,165,135,170,180,191,211,113,73,96]
+hosts = [94,126,96,93,17,135,165,140,168,159,186,177,187,191,210]
 def install(ip):
     username=r"swqa"
     host=r"10.19.192."
@@ -14,7 +14,7 @@ def install(ip):
         password=r'neo'
     hostname = host+str(ip)
     os.popen(' ssh-keygen -f "/home/charl/.ssh/known_hosts" -R '+hostname)
-    os.popen(r"/usr/bin/expect install.exp "+hostname + r" " + username+r" "+password)
+    os.popen(r"/usr/bin/expect update.exp "+hostname + r" " + username+r" "+password)
     print("****************"+ hostname +"************")
 
 if __name__ == '__main__':

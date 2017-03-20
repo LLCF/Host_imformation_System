@@ -1,11 +1,8 @@
-from sqlalchemy import Column, String, Integer, ForeignKey,DateTime, update 
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, String, Integer, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from hostinfo import host
-from datetime import datetime
-from mail import send_email
+from datetime import datetime, timedelta
 import json
 Base = declarative_base()
 
@@ -25,9 +22,8 @@ class Host(Base):
     desc=Column(String)
     bmc=Column(String)
     bmclo=Column(String)
+    ttime = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
     nowtime = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
-#    def __repr__(self):
-#        return "<Host(cards_name=%s,driver=%s,num_cards=%s,osenv=%s,alive=%s,host_name=%s,ip=%s,mac=%s)>" % self.cards_name,self.driver,self.num_cards,self.osenv,str(self.alive),self.host_name,self.ip,self.mac
 def Host_init(h):
     try:
         H = Host(cards_name=''.join(e for e in h.cards_name ),driver=h.driver,num_cards=h.num_cards,osenv=h.osenv,alive=str(h.alive),host_name=h.host_name,ip=h.ip,mac=h.mac,bmc=h.bmc)
@@ -49,7 +45,7 @@ class connect_data():
             host[0].driver = h.driver
             host[0].num_cards=h.num_cards
             host[0].osenv=h.osenv
-            if host[0].alive=="False" and h.alive=="False":
+            if host[0].alive=="False" and h.alive=="False" and host[0].ttime < datetime.now():
                 host[0].user=""
                 host[0].desc=""
             host[0].alive=h.alive
@@ -71,21 +67,23 @@ class connect_data():
     def update(self,data):
         host = self.s.query(Host).filter_by(mac=data["mac"]).all()
         mac=''
-        if host[0].user!=data["user"]:
-            mac=host[0].mac
-        host[0].user = data["user"]
-        host[0].desc = data["desc"]
         host[0].bmc = data["bmc"]
         host[0].bmclo = data["bmclo"]
         host[0].login = data["login"]
+        if host[0].user == data["user"] and host[0].desc == data["desc"] and self.time_to_days(host[0].ttime) == data["uday"]:
+            self.s.commit()
+            return mac
+        mac=host[0].mac
+        host[0].user = data["user"]
+        host[0].desc = data["desc"]
+        host[0].ttime = self.days_to_time(data["uday"])
         self.s.commit()
         return mac
     def check(self):
         hosts = self.s.query(Host).all()
         now = datetime.now()
         for host in hosts:
-            #t = datetime.strptime(host.nowtime.split('.')[0], '%Y-%m-%d %X')
-            if (now - host.nowtime).seconds > 3600*6:
+            if (now - host.nowtime).seconds > 3600*2:
                 host.user=""
                 host.desc=""
                 host.osenv="Unknown"
@@ -94,6 +92,25 @@ class connect_data():
                 host.host_name="Unconnected"
                 host.alive = "False"
                 self.s.commit()
+    @staticmethod
+    def time_to_days(ttime):
+        if ttime != None and ttime != '' and ttime > datetime.now():
+            days = str((ttime - datetime.now()).total_seconds()/86400.)[0:4]
+        else:
+            days = "0"
+        return days
+    @staticmethod
+    def days_to_time(days):
+        if days != '':
+            try:
+                days = float(days)
+                if days < 0:
+                    days = 0
+            except:
+                days = 0
+        else:
+            days = 0
+        return datetime.now() + timedelta(days=days)
     def query_data(self, macc):
         host = self.s.query(Host).filter_by(mac=macc).all()
         return host[0].user, host[0].cards_name, host[0].ip, host[0].desc
@@ -101,5 +118,6 @@ class connect_data():
         datas = self.s.query(Host).all()
         result = []
         for data in datas:
-	    result.append({r"cards_name":data.cards_name,r"num_cards":" "+data.num_cards,"login":data.login,r"host_name":data.host_name,r"driver":data.driver,r"osenv":data.osenv,r"ip":data.ip,"alive":data.alive,r"nowtime":str(data.nowtime)[5:-7],"mac":data.mac,"user":data.user,"desc":data.desc,"bmc":data.bmc,"bmclo":data.bmclo})
+            days = self.time_to_days(data.ttime)
+            result.append({r"cards_name":data.cards_name,"uday":days,r"num_cards":" "+data.num_cards,"login":data.login,r"host_name":data.host_name,r"driver":data.driver,r"osenv":data.osenv,r"ip":data.ip,"alive":data.alive,r"nowtime":str(data.nowtime)[5:-7],"mac":data.mac,"user":data.user,"desc":data.desc,"bmc":data.bmc,"bmclo":data.bmclo})
         return json.dumps(result)

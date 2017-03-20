@@ -3,7 +3,6 @@ from apps.hostinfo import host
 import pickle
 from apps.database import connect_data
 import json
-#import sqlite3 as lite
 from apps.scheduler import Scheduler
 from flask_script import Manager
 from flask_mail import Mail, Message
@@ -12,12 +11,8 @@ import os
 from time import sleep 
 
 app = Flask(__name__)
-app.config['MAIL_SERVER'] = 'smtp.163.com'#'smtp.nvidia.com'
-app.config['MAIL_PORT'] = 994
-#app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-app.config['MAIL_USE_SSL']=True
+app.config['MAIL_SERVER'] = 'smtp.nvidia.com' #'smtp.163.com'#'smtp.nvidia.com'
+app.config['MAIL_USERNAME'] = "hostsinformation.nvidia.com"
 
 
 mail = Mail(app)
@@ -36,9 +31,6 @@ def requests():
     
 @app.route('/update', methods=['POST'])
 def update():
-    #data = request.get_data()
-    #print data
-    #data = json.loads(data)a
     data = request.form.get('data')
     data = data.replace('(','[').replace(')',']').replace('\'','"')
     data = json.loads(data)
@@ -47,7 +39,6 @@ def update():
     for d in data:
         mac = cdata.update(d)
         if mac != '':
-            #macs.append(mac)
             user, host, ip, usage = cdata.query_data(mac)
             if user != '':
                 c_data.append([user, host, ip, usage])

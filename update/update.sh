@@ -20,12 +20,9 @@ fi
 
 sudo pip install requests
 
-git clone https://github.com/LLCF/Host_imformation_System
-cd Host_imformation_System
-#sudo cp -f crontab /etc/crontab
 cat /etc/crontab | grep -v "hostinfo.py" | sudo tee /etc/crontab
-sudo echo  "* */1    * * *   root    python /etc/init.d/hostinfo.py" >> /etc/crontab
-sudo cp apps/hostinfo.py install/client.cfg  /etc/init.d/
+sudo echo  "*/10 *    * * *   root    python /etc/init.d/hostinfo.py" >> /etc/crontab
+sudo mv hostinfo.py client.cfg  /etc/init.d/
 result=$(cat /etc/issue | grep "16")
 if [[ "$result" != "" ]]
 then
@@ -33,9 +30,6 @@ then
 else
     sudo service cron restart
 fi
-cd ..
-rm -rf Host_imformation_System
-sudo /etc/init.d/hostinfo.py
-rm -f ./install.sh
-echo "install success"
+rm -f ./update.sh
+echo "update success"
 
