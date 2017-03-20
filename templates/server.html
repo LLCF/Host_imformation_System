@@ -23,6 +23,12 @@
                   border: 1px solid #ccc;
                   border-radius: 4px;
             }
+            .usedrowcolor{  
+                  background-color:#ff0000;  
+            }  
+            .unusedrowcolor{  
+                  background-color:#00ff00;  
+            } 
         </style>
   </head>
 
@@ -30,10 +36,11 @@
     <div class="container">
     <h1>Test Host System Info in Manual Test</h1>
     <div id="toolbar">
-            <button id="button" class="btn btn-default">Update</button>
+            <button id="button" class="btn btn-default">Update</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <button id="setuser" class="btn btn-default">Set</button>
             <input  type="text" name="user" id="user" size="12" placeholder="User">
             <input  type="text" name="usage" id="usage"  size="12" placeholder="Usage" >
+	    <input  type="text" name="days" id="days"  size="12" placeholder="Days" >
    </div>
      <table id="table"
             data-toolbar="#toolbar"
@@ -42,34 +49,38 @@
 	    data-pagination="true"  
             data-show-refresh="true"  
             data-data-type="json"
-            data-striped="true"
+            data-striped="false"
             data-search="true"
             data-sort-stable="true" 
             data-pagination="true" 
             data-page-number=1
-            data-show-columns="true"
+            data-page-size=20
+            data-checkbox-header=false
+            data-show-columns="true" 
             data-show-footer="false">
-		    <thead>
-			    <tr> 
-                                <th data-field="state" data-checkbox='true'  ></th>
-                                <th data-type="text" contenteditable="true" data-field="host_name" >Host Name</th>
-				<th data-field="cards_name">Cards</th>
-	    			<th data-field="num_cards">Num</th>
-		    		<th data-field="driver">Driver</th>
-			    	<th data-field="osenv" data-sortable="true">OS</th>
-				<th data-field="ip">IP</th>
-                                <th data-field="login" data-editable="true">Login</th>
-		                <th data-field="alive" data-sortable="true" data-formatter='displaycolor' >Used</th>
-				<th data-field="nowtime" data-sortable="true" >Time</th>
-                                <th data-field="user" data-editable="true" data-sortable="true">User</th>
-                                <th data-field="mac" data-visible="false">Mac</th> 
-                                <th data-field="desc" data-editable="true">Usage</th> 
-                                <th data-field="bmc" data-editable="true">BMC</th>
-                                <th data-field="bmclo" data-editable="true">BMC Login</th>
-			    </tr>
-		    </thead>
-	    </table>
-    </div>
+            <thead>
+                <tr> 
+                    <th data-field="state" data-checkbox='true'  ></th>
+                    <th data-field="host_name" >Host Name</th>
+                    <th data-field="cards_name">Cards</th>
+	            <th data-field="num_cards">Num</th>
+                    <th data-field="driver">Driver</th>
+                    <th data-field="osenv" data-sortable="true">OS</th>
+                    <th data-field="ip">IP</th>
+                    <th data-field="login" >Login</th>
+                    <th data-field="alive" data-sortable="true" data-formatter=displaycolor>Used</th>
+                    <th data-field="uday" data-editable="true">Udays</th>
+                    <th data-field="nowtime" data-visible="false">Time</th>
+                    <th data-field="user" data-editable="true" data-sortable="true">User</th>
+                    <th data-field="mac" data-visible="false">Mac</th>
+                    <th data-field="loc" data-editable="true">Loc</th> 
+                    <th data-field="desc" data-editable="true">Usage</th> 
+                    <th data-field="bmc" >BMC</th>
+                    <th data-field="bmclo" >BMC Login</th>
+                </tr>
+            </thead>
+    </table>
+   </div>
 <script>
     var $table = $('#table'),
         $button = $('#button');
@@ -86,35 +97,47 @@
                 $.ajax({
                 url:"/update",
                 type: 'POST',
-                 data: data,
-                 success: function () {
-                alert("Success")
-               }
-              })
-             }   
+                data: data,
+                success: function () {
+                    alert("Success")
+               }})
+     }   
     function displaycolor(value,row,index) {  
         var a = "";  
             if(value == "True") {  
-                var a = '<span style="background-color:#00ff00">'+value+'</span>';  
+                var a = '<span>'+'Used'+'</span>';  
             }else{  
-                var a = '<span style="background-color:#ff0000" >'+value+'</span>';  
+                var a = '<span>'+'Unused'+'</span>';  
             }  
             return a;  
-        }  
+        }
+    function changecolor(){
+         var table = document.getElementById("table");
+         var rows = table.getElementsByTagName("tr");
+         for(i = 1; i < rows.length; i++){            
+            if(rows[i].textContent.indexOf("Used")>0){  
+                rows[i].bgColor="ff8181"  
+            }else{  
+                rows[i].bgColor="ccff99"
+            }        
+        } 
+    }
+    
     function getIdSelections() {
          $.map($table.bootstrapTable('getSelections'), function (rows) {
             if((rows.user==""&&document.getElementById("user").value!="")||(rows.user!=""&&document.getElementById("user").value=="")){
-             rows.user=document.getElementById("user").value
-             rows.desc=document.getElementById("usage").value
+             rows.user=document.getElementById("user").value;
+             rows.desc=document.getElementById("usage").value;
+             rows.uday=document.getElementById("days").value;
            }
             $table.bootstrapTable('updateRow', {index:rows.index,row:rows});
         });
         post();
     }
     $setuser.click(function () {
-         getIdSelections(); 
-            
+         getIdSelections();     
     });
+     $("#table").on('load-success.bs.table',function(){changecolor();});
 </script>
   </body>
 </html>

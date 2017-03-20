@@ -22,6 +22,7 @@ class Host(Base):
     desc=Column(String)
     bmc=Column(String)
     bmclo=Column(String)
+    loc=Column(String)
     ttime = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
     nowtime = Column(DateTime(), default=datetime.now, onupdate=datetime.now)
 def Host_init(h):
@@ -70,6 +71,7 @@ class connect_data():
         host[0].bmc = data["bmc"]
         host[0].bmclo = data["bmclo"]
         host[0].login = data["login"]
+        host[0].loc = data["loc"]
         if host[0].user == data["user"] and host[0].desc == data["desc"] and self.time_to_days(host[0].ttime) == data["uday"]:
             self.s.commit()
             return mac
@@ -119,5 +121,5 @@ class connect_data():
         result = []
         for data in datas:
             days = self.time_to_days(data.ttime)
-            result.append({r"cards_name":data.cards_name,"uday":days,r"num_cards":" "+data.num_cards,"login":data.login,r"host_name":data.host_name,r"driver":data.driver,r"osenv":data.osenv,r"ip":data.ip,"alive":data.alive,r"nowtime":str(data.nowtime)[5:-7],"mac":data.mac,"user":data.user,"desc":data.desc,"bmc":data.bmc,"bmclo":data.bmclo})
+            result.append({r"cards_name":data.cards_name,"uday":days,r"num_cards":" "+data.num_cards,"login":data.login,r"host_name":data.host_name,r"driver":data.driver,r"osenv":data.osenv,r"ip":data.ip,"alive":data.alive,r"nowtime":str(data.nowtime)[5:-7],"mac":data.mac,"user":data.user,"desc":data.desc,"bmc":data.bmc,"bmclo":data.bmclo,"loc":data.loc})
         return json.dumps(result)
